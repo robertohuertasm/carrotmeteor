@@ -9,7 +9,7 @@ ENV LC_ALL="POSIX" \
 #COPY start.sh start.sh
 #RUN sh start.sh && rm start.sh
 
-RUN curl https://install.meteor.com/ | sh
+RUN curl https://install.meteor.com/ | sh && npm install -g mupx
 
 
 # RUN mkdir /tmp/meteor \
