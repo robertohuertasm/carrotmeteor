@@ -8,16 +8,11 @@ ENV LC_ALL="POSIX" \
     
 #COPY start.sh start.sh
 #RUN sh start.sh && rm start.sh
+
+#due to a bug when extracting a tarball we have to customize the default meteor script
+#once this is solved we'll be back to the usual start script
 COPY meteor.sh meteor.sh
 RUN sh meteor.sh && npm install -g mupx && rm meteor.sh
-
-
-# RUN mkdir /tmp/meteor \
-#     && curl -SL https://install.meteor.com/ -o /tmp/meteor/inst \
-#     && sed -e "s/^RELEASE=.*/RELEASE=\"\$METEOR_VERSION\"/" /tmp/meteor/inst > /tmp/meteor/inst-canonical \
-#     && chmod +x /tmp/meteor/inst \
-#     && /tmp/meteor/inst \
-#     && rm -rf /tmp/meteor
 
 #VOLUME /app
 WORKDIR /app
