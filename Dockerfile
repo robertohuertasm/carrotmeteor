@@ -8,8 +8,8 @@ ENV LC_ALL="POSIX" \
     
 #COPY start.sh start.sh
 #RUN sh start.sh && rm start.sh
-
-RUN sh meteor.sh && npm install -g mupx
+COPY meteor.sh meteor.sh
+RUN sh meteor.sh && npm install -g mupx && rm meteor.sh
 
 
 # RUN mkdir /tmp/meteor \
