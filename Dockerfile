@@ -9,12 +9,15 @@ ENV LC_ALL="POSIX" \
 #COPY start.sh start.sh
 #RUN sh start.sh && rm start.sh
 
-RUN mkdir /tmp/meteor \
-    && curl -SL https://install.meteor.com/ -o /tmp/meteor/inst \
-    && sed -e "s/^RELEASE=.*/RELEASE=\"\$METEOR_VERSION\"/" /tmp/meteor/inst > /tmp/meteor/inst-canonical \
-    && chmod +x /tmp/meteor/inst \
-    && /tmp/meteor/inst \
-    && rm -rf /tmp/meteor
+RUN curl https://install.meteor.com/ | sh
+
+
+# RUN mkdir /tmp/meteor \
+#     && curl -SL https://install.meteor.com/ -o /tmp/meteor/inst \
+#     && sed -e "s/^RELEASE=.*/RELEASE=\"\$METEOR_VERSION\"/" /tmp/meteor/inst > /tmp/meteor/inst-canonical \
+#     && chmod +x /tmp/meteor/inst \
+#     && /tmp/meteor/inst \
+#     && rm -rf /tmp/meteor
 
 #VOLUME /app
 WORKDIR /app
