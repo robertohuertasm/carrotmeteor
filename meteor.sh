@@ -30,7 +30,7 @@ run_it () {
 # ~/.meteor, replacing whatever is already there. (~/.meteor is only a cache of
 # packages and package metadata; no personal persistent data is stored there.)
 
-RELEASE="1.3.2.4"
+RELEASE="1.4.0.1"
 
 
 # Now, on to the actual installer!
@@ -128,20 +128,64 @@ if [ -e "$HOME/.meteor" ]; then
 fi
 
 TARBALL_URL="https://meteorinstall-4168.kxcdn.com/packages-bootstrap/${RELEASE}/meteor-bootstrap-${PLATFORM}.tar.gz"
-
 INSTALL_TMPDIR="$HOME/.meteor-install-tmp"
-rm -rf "$INSTALL_TMPDIR"
+TARBALL_FILE="$HOME/.meteor-tarball-tmp"
+
+cleanUp() {
+  rm -rf "$TARBALL_FILE"
+  rm -rf "$INSTALL_TMPDIR"
+}
+
+# Remove temporary files now in case they exist.
+cleanUp
+
+# Make sure cleanUp gets called if we exit abnormally.
+trap cleanUp EXIT
+
 mkdir "$INSTALL_TMPDIR"
+
+# Only show progress bar animations if we have a tty
+# (Prevents tons of console junk when installing within a pipe)
+VERBOSITY="--silent";
+if [ -t 1 ]; then
+  VERBOSITY="--progress-bar"
+fi
+
 echo "Downloading Meteor distribution"
-curl --progress-bar --fail "$TARBALL_URL" | tar --absolute-names -xzf - -C "$INSTALL_TMPDIR" -o
+# keep trying to curl the file until it works (resuming where possible)
+MAX_ATTEMPTS=10
+RETRY_DELAY_SECS=5
+set +e
+ATTEMPTS=0
+while [ $ATTEMPTS -lt $MAX_ATTEMPTS ]
+do
+  ATTEMPTS=$((ATTEMPTS + 1))
+
+  curl $VERBOSITY --fail --continue-at - \
+    "$TARBALL_URL" --output "$TARBALL_FILE"
+
+  if [ $? -eq 0 ]
+  then
+      break
+  fi
+
+  echo "Retrying download in $RETRY_DELAY_SECS seconds..."
+  sleep $RETRY_DELAY_SECS
+done
+set -e
+
 # bomb out if it didn't work, eg no net
+test -e "${TARBALL_FILE}"
+tar -xzf "$TARBALL_FILE" -C "$INSTALL_TMPDIR" -o
+
 test -x "${INSTALL_TMPDIR}/.meteor/meteor"
 mv "${INSTALL_TMPDIR}/.meteor" "$HOME"
-rm -rf "${INSTALL_TMPDIR}"
 # just double-checking :)
 test -x "$HOME/.meteor/meteor"
 
-
+# The `trap cleanUp EXIT` line above won't actually fire after the exec
+# call below, so call cleanUp manually.
+cleanUp
 
 echo
 echo "Meteor ${RELEASE} has been installed in your home directory (~/.meteor)."
@@ -149,9 +193,6 @@ echo "Meteor ${RELEASE} has been installed in your home directory (~/.meteor)."
 METEOR_SYMLINK_TARGET="$(readlink "$HOME/.meteor/meteor")"
 METEOR_TOOL_DIRECTORY="$(dirname "$METEOR_SYMLINK_TARGET")"
 LAUNCHER="$HOME/.meteor/$METEOR_TOOL_DIRECTORY/scripts/admin/launch-meteor"
-
-
-
 
 if cp "$LAUNCHER" "$PREFIX/bin/meteor" >/dev/null 2>&1; then
   echo "Writing a launcher script to $PREFIX/bin/meteor for your convenience."
