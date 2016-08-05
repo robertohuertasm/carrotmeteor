@@ -10,7 +10,7 @@ ENV LC_ALL="POSIX" \
 # COPY start.sh start.sh
 # RUN sh start.sh && rm start.sh
 COPY meteor.sh meteor.sh
-RUN sh meteor.sh && npm install -g mupx && apt-get update && apt-get install git && rm meteor.sh
+RUN sh meteor.sh && npm install -g mupx && apt-get update && apt-get -y install git && rm meteor.sh
 
 # VOLUME /app
 WORKDIR /app
