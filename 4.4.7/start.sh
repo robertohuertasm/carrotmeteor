@@ -7,4 +7,4 @@ sed -e "s/^RELEASE=.*/RELEASE=\"\$METEOR_VERSION\"/" /tmp/meteor/inst > /tmp/met
 chmod +x /tmp/meteor/inst 
 /tmp/meteor/inst 
 rm -rf /tmp/meteor
-npm install -g mupx
+npm install -g mup
