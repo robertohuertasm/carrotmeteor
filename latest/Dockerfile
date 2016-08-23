@@ -1,4 +1,4 @@
-FROM node:0.10.46-slim
+FROM node:4.4.7-slim
 MAINTAINER Valudio <development@valudio.com>
 
 # Locale issue
