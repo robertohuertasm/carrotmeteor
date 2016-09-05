@@ -1,6 +1,7 @@
 # Meteor base image for carrotcake projects
 
 [![](https://images.microbadger.com/badges/image/valudio/meteorbase.svg)](https://microbadger.com/images/valudio/meteorbase)
+[![](https://images.microbadger.com/badges/version/valudio/meteorbase.svg)](http://microbadger.com/images/valudio/meteorbase)
 
 Sports the latest version of Meteor.
 
